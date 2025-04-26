@@ -149,13 +149,13 @@ update_golang() {
 }
 
 install_small8() {
-    ./scripts/feeds install -p small8 -f xray-core xray-plugin dns2tcp dns2socks hysteria sing-box v2ray-core v2ray-geodata v2ray-geoview v2ray-plugin chinadns-ng ipt2socks tcping trojan-plus simple-obfs luci-app-passwall alist luci-app-alist smartdns luci-app-smartdns v2dat mosdns luci-app-mosdns adguardhome luci-app-adguardhome ddns-go luci-app-ddns-go taskd luci-lib-xterm luci-lib-taskd luci-app-store quickstart luci-app-quickstart luci-app-istorex luci-theme-argon netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash luci-app-homeproxy luci-app-amlogic nikki luci-app-nikki tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf easytier luci-app-easytier luci-app-ramfree luci-app-vlmcsd mwan3 watchcat btop istorex luci-app-irqbalance luci-app-wrtbwmon luci-app-nlbwmon
+    ./scripts/feeds install -p small8 -f dns2tcp dns2socks hysteria chinadns-ng ipt2socks tcping alist luci-app-alist smartdns luci-app-smartdns mosdns luci-app-mosdns adguardhome luci-app-autoreboot luci-app-adguardhome ddns-go luci-app-ddns-go taskd luci-lib-xterm luci-lib-taskd luci-app-store quickstart luci-app-quickstart luci-app-istorex luci-theme-argon netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash luci-app-homeproxy nikki luci-app-nikki tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf easytier luci-app-easytier luci-app-ramfree luci-app-vlmcsd mwan3 watchcat btop istorex luci-app-irqbalance luci-app-wrtbwmon
     ./scripts/feeds install -p mypack -f luci-app-taskplan
-    ./scripts/feeds install -p mypack -f luci-app-cpu-perf
     ./scripts/feeds install -p mypack -f luci-app-cpu-status
     ./scripts/feeds install -p mypack -f luci-app-temp-status
     ./scripts/feeds install -p mypack -f luci-app-advancedplus
     ./scripts/feeds install -p mypack -f luci-app-poweroffdevice
+    ./scripts/feeds install -p mypack -f luci-app-netspeedtest
 }
 
 install_feeds() {
