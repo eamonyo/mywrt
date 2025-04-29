@@ -67,7 +67,7 @@ update_feeds() {
         [ -z "$(tail -c 1 "$BUILD_DIR/$FEEDS_CONF")" ] || echo "" >>"$BUILD_DIR/$FEEDS_CONF"
         echo "src-git small8 https://github.com/kenzok8/small-package" >>"$BUILD_DIR/$FEEDS_CONF"
     fi
-    
+
     echo "src-git mypack https://github.com/eamonyo/openwrt-pack" >> "$BUILD_DIR/$FEEDS_CONF"
 
     # 添加bpf.mk解决更新报错
@@ -122,18 +122,19 @@ remove_unwanted_packages() {
         \rm -rf ./package/istore
     fi
 
-    if grep -q "nss_packages" "$BUILD_DIR/$FEEDS_CONF"; then
-        local nss_packages_dirs=(
-            "$BUILD_DIR/feeds/luci/protocols/luci-proto-quectel"
-            "$BUILD_DIR/feeds/packages/net/quectel-cm"
-            "$BUILD_DIR/feeds/packages/kernel/quectel-qmi-wwan"
-        )
-        for dir in "${nss_packages_dirs[@]}"; do
-            if [[ -d "$dir" ]]; then
-                \rm -rf "$dir"
-            fi
-        done
-    fi
+    # ipq60xx/50xx不支持NSS offload mnet_rx
+    #if grep -q "nss_packages" "$BUILD_DIR/$FEEDS_CONF"; then
+    #    local nss_packages_dirs=(
+    #        "$BUILD_DIR/feeds/luci/protocols/luci-proto-quectel"
+    #        "$BUILD_DIR/feeds/packages/net/quectel-cm"
+    #        "$BUILD_DIR/feeds/packages/kernel/quectel-qmi-wwan"
+    #    )
+    #    for dir in "${nss_packages_dirs[@]}"; do
+    #        if [[ -d "$dir" ]]; then
+    #            \rm -rf "$dir"
+    #        fi
+    #    done
+    #fi
 
     # 临时放一下，清理脚本
     if [ -d "$BUILD_DIR/target/linux/qualcommax/base-files/etc/uci-defaults" ]; then
@@ -149,7 +150,14 @@ update_golang() {
 }
 
 install_small8() {
-    ./scripts/feeds install -p small8 -f dns2tcp dns2socks hysteria chinadns-ng ipt2socks tcping alist luci-app-alist smartdns luci-app-smartdns mosdns luci-app-mosdns adguardhome luci-app-autoreboot luci-app-adguardhome ddns-go luci-app-ddns-go taskd luci-lib-xterm luci-lib-taskd luci-app-store quickstart luci-app-quickstart luci-app-istorex luci-theme-argon netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash luci-app-homeproxy nikki luci-app-nikki tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf easytier luci-app-easytier luci-app-ramfree luci-app-vlmcsd mwan3 watchcat btop istorex luci-app-irqbalance luci-app-wrtbwmon
+    ./scripts/feeds install -p small8 -f xray-core xray-plugin dns2tcp dns2socks haproxy hysteria \
+        naiveproxy shadowsocks-rust sing-box v2ray-core v2ray-geodata v2ray-geoview v2ray-plugin \
+        chinadns-ng ipt2socks tcping trojan-plus simple-obfs shadowsocksr-libev \
+        alist luci-app-alist smartdns luci-app-smartdns v2dat mosdns luci-app-mosdns \
+        adguardhome luci-app-adguardhome taskd luci-lib-xterm luci-lib-taskd \
+        luci-app-store quickstart luci-app-quickstart luci-app-istorex luci-app-cloudflarespeedtest \
+        luci-theme-argon netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash \
+        nikki luci-app-nikki tailscale oaf open-app-filter luci-app-oaf
     ./scripts/feeds install -p mypack -f luci-app-taskplan
     ./scripts/feeds install -p mypack -f luci-app-cpu-status
     ./scripts/feeds install -p mypack -f luci-app-temp-status
@@ -184,7 +192,7 @@ fix_default_set() {
     fi
 
     install -Dm755 "$BASE_PATH/patches/990_set_argon_primary" "$BUILD_DIR/package/base-files/files/etc/uci-defaults/990_set_argon_primary"
-    install -Dm755 "$BASE_PATH/patches/991_set_nf_conntrack_max" "$BUILD_DIR/package/base-files/files/etc/uci-defaults/991_set_nf_conntrack_max"
+    install -Dm755 "$BASE_PATH/patches/991_custom_settings" "$BUILD_DIR/package/base-files/files/etc/uci-defaults/991_custom_settings"
 
     if [ -f "$BUILD_DIR/package/emortal/autocore/files/tempinfo" ]; then
         if [ -f "$BASE_PATH/patches/tempinfo" ]; then
@@ -271,6 +279,7 @@ remove_something_nss_kmod() {
         sed -i '/kmod-qca-nss-drv-wifi-meshmgr/d' $ipq_mk_path
         sed -i '/kmod-qca-nss-macsec/d' $ipq_mk_path
 
+        sed -i 's/automount //g' $ipq_mk_path
         sed -i 's/cpufreq //g' $ipq_mk_path
     fi
 }
@@ -718,10 +727,10 @@ update_dns_app_menu_location() {
     fi
 }
 
-remove_easytier_web() {
-    local easytier_path="$BUILD_DIR/package/feeds/small8/easytier/Makefile"
+fix_easytier() {
+    local easytier_path="$BUILD_DIR/package/feeds/small8/luci-app-easytier/luasrc/model/cbi/easytier.lua"
     if [ -d "${easytier_path%/*}" ] && [ -f "$easytier_path" ]; then
-        sed -i '/easytier-web/d' "$easytier_path"
+        sed -i 's/util/xml/g' "$easytier_path"
     fi
 }
 
@@ -787,7 +796,7 @@ main() {
     install_feeds
     support_fw4_adg
     update_script_priority
-    remove_easytier_web
+    fix_easytier
     update_geoip
     # update_proxy_app_menu_location
     # update_dns_app_menu_location
