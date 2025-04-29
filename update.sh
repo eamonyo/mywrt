@@ -123,6 +123,8 @@ remove_unwanted_packages() {
     fi
 
     # ipq60xx/50xx不支持NSS offload mnet_rx
+    if grep -q "nss_packages" "$BUILD_DIR/$FEEDS_CONF"; then
+        rm -rf $BUILD_DIR/feeds/nss_packages/wwan
     #if grep -q "nss_packages" "$BUILD_DIR/$FEEDS_CONF"; then
     #    local nss_packages_dirs=(
     #        "$BUILD_DIR/feeds/luci/protocols/luci-proto-quectel"
@@ -155,7 +157,7 @@ install_small8() {
         chinadns-ng ipt2socks tcping trojan-plus simple-obfs shadowsocksr-libev \
         alist luci-app-alist smartdns luci-app-smartdns v2dat mosdns luci-app-mosdns \
         adguardhome luci-app-adguardhome taskd luci-lib-xterm luci-lib-taskd \
-        luci-app-store quickstart luci-app-quickstart luci-app-istorex luci-app-cloudflarespeedtest \
+        luci-app-store quickstart luci-app-quickstart luci-app-istorex \
         luci-theme-argon netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash \
         nikki luci-app-nikki tailscale oaf open-app-filter luci-app-oaf
     ./scripts/feeds install -p mypack -f luci-app-taskplan
