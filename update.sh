@@ -125,7 +125,9 @@ remove_unwanted_packages() {
     # ipq60xx/50xx不支持NSS offload mnet_rx
     if grep -q "nss_packages" "$BUILD_DIR/$FEEDS_CONF"; then
        local nss_packages_dirs=(
-           "$BUILD_DIR/feeds/packages/kernel/quectel-qmi-wwan"
+            "$BUILD_DIR/feeds/luci/protocols/luci-proto-quectel"
+            "$BUILD_DIR/feeds/packages/net/quectel-cm"
+            "$BUILD_DIR/feeds/packages/kernel/quectel-qmi-wwan"
        )
        for dir in "${nss_packages_dirs[@]}"; do
            if [[ -d "$dir" ]]; then
