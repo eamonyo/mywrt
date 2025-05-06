@@ -145,17 +145,15 @@ update_golang() {
 install_small8() {
     ./scripts/feeds install -p small8 -f xray-core xray-plugin dns2tcp dns2socks haproxy hysteria \
         naiveproxy shadowsocks-rust sing-box v2ray-core v2ray-geodata v2ray-geoview v2ray-plugin \
-        chinadns-ng ipt2socks tcping trojan-plus simple-obfs shadowsocksr-libev \
+        chinadns-ng ipt2socks tcping trojan-plus simple-obfs shadowsocksr-libev luci-app-passwall  \
         alist luci-app-alist smartdns luci-app-smartdns v2dat mosdns luci-app-mosdns \
         adguardhome luci-app-adguardhome taskd luci-lib-xterm luci-lib-taskd \
         luci-app-store quickstart luci-app-quickstart luci-app-istorex \
         luci-theme-argon netdata luci-app-netdata luci-app-openclash \
-        nikki luci-app-nikki 
+        nikki luci-app-nikki luci-app-homeproxy ddns-go luci-app-ddns-go lucky luci-app-lucky tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf easytier luci-app-easytier msd_lite luci-app-msd_lite
     ./scripts/feeds install -p mypack -f luci-app-taskplan
     ./scripts/feeds install -p mypack -f luci-app-cpu-status
     ./scripts/feeds install -p mypack -f luci-app-temp-status
-    ./scripts/feeds install -p mypack -f luci-app-advancedplus
-    ./scripts/feeds install -p mypack -f luci-app-poweroffdevice
     ./scripts/feeds install -p mypack -f luci-app-netspeedtest
 }
 
