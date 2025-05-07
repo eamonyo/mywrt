@@ -152,10 +152,10 @@ install_small8() {
         tuic-client chinadns-ng ipt2socks tcping trojan-plus simple-obfs shadowsocksr-libev \
         luci-app-passwall alist luci-app-alist smartdns luci-app-smartdns v2dat mosdns luci-app-mosdns \
         adguardhome luci-app-adguardhome ddns-go luci-app-ddns-go taskd luci-lib-xterm luci-lib-taskd \
-        luci-app-store quickstart luci-app-quickstart luci-app-istorex luci-app-cloudflarespeedtest \
-        luci-theme-argon netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash luci-app-homeproxy \
-        luci-app-amlogic nikki luci-app-nikki tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf \
-        easytier luci-app-easytier msd_lite luci-app-msd_lite
+        luci-app-store quickstart luci-app-quickstart luci-app-istorex \
+        luci-theme-argon lucky luci-app-lucky luci-app-openclash luci-app-homeproxy \
+        nikki luci-app-nikki tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf \
+        easytier luci-app-easytier
     ./scripts/feeds install -p mypack -f luci-app-taskplan
     ./scripts/feeds install -p mypack -f luci-app-cpu-status
     ./scripts/feeds install -p mypack -f luci-app-temp-status
@@ -333,19 +333,6 @@ fix_mkpkg_format_invalid() {
             sed -i 's/PKG_RELEASE:=$/PKG_RELEASE:=1/g' $BUILD_DIR/feeds/small8/luci-app-store/Makefile
         fi
     fi
-}
-
-add_ax6600_led() {
-    local athena_led_dir="$BUILD_DIR/package/emortal/luci-app-athena-led"
-
-    # 删除旧的目录（如果存在）
-    rm -rf "$athena_led_dir" 2>/dev/null
-
-    # 克隆最新的仓库
-    git clone --depth=1 https://github.com/NONGFAH/luci-app-athena-led.git "$athena_led_dir"
-    # 设置执行权限
-    chmod +x "$athena_led_dir/root/usr/sbin/athena-led"
-    chmod +x "$athena_led_dir/root/etc/init.d/athena_led"
 }
 
 chanage_cpuusage() {
@@ -768,7 +755,6 @@ main() {
     # fix_mkpkg_format_invalid
     chanage_cpuusage
     update_tcping
-    add_ax6600_led
     set_custom_task
     update_pw
     install_opkg_distfeeds
