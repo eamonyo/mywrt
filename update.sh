@@ -68,7 +68,13 @@ update_feeds() {
         echo "src-git small8 https://github.com/kenzok8/small-package" >>"$BUILD_DIR/$FEEDS_CONF"
     fi
 
-    echo "src-git mypack https://github.com/eamonyo/openwrt-pack" >> "$BUILD_DIR/$FEEDS_CONF"
+    # 添加自定义软件源
+    if ! grep -q "mypack" "$BUILD_DIR/$FEEDS_CONF"; then
+        # 确保文件以换行符结尾
+        [ -z "$(tail -c 1 "$BUILD_DIR/$FEEDS_CONF")" ] || echo "" >> "$BUILD_DIR/$FEEDS_CONF"
+        echo "src-git mypack https://github.com/eamonyo/openwrt-pack" >> "$BUILD_DIR/$FEEDS_CONF"
+    fi
+
 
     # 添加bpf.mk解决更新报错
     if [ ! -f "$BUILD_DIR/include/bpf.mk" ]; then
@@ -122,11 +128,9 @@ remove_unwanted_packages() {
         \rm -rf ./package/istore
     fi
 
-    # ipq60xx/50xx不支持NSS offload mnet_rx
+    # ipq60xx不支持NSS offload mnet_rx
     if grep -q "nss_packages" "$BUILD_DIR/$FEEDS_CONF"; then
         rm -rf "$BUILD_DIR/feeds/nss_packages/wwan"
-        # dtlsmgr、tlsmgr会编译qca-nss-crypto
-        sed -i -e '/,qca-nss-drv-dtlsmgr/d' -e '/,qca-nss-drv-tlsmgr/d' "$BUILD_DIR/feeds/nss_packages/qca-nss-clients/Makefile"
     fi
 
     # 临时放一下，清理脚本
@@ -145,12 +149,13 @@ update_golang() {
 install_small8() {
     ./scripts/feeds install -p small8 -f xray-core xray-plugin dns2tcp dns2socks haproxy hysteria \
         naiveproxy shadowsocks-rust sing-box v2ray-core v2ray-geodata v2ray-geoview v2ray-plugin \
-        chinadns-ng ipt2socks tcping trojan-plus simple-obfs shadowsocksr-libev \
-        alist luci-app-alist smartdns luci-app-smartdns v2dat mosdns luci-app-mosdns \
-        adguardhome luci-app-adguardhome taskd luci-lib-xterm luci-lib-taskd \
-        luci-app-store quickstart luci-app-quickstart luci-app-istorex \
-        luci-theme-argon netdata luci-app-netdata luci-app-openclash \
-        nikki luci-app-nikki luci-app-homeproxy ddns-go luci-app-ddns-go lucky luci-app-lucky tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf easytier luci-app-easytier
+        tuic-client chinadns-ng ipt2socks tcping trojan-plus simple-obfs shadowsocksr-libev \
+        luci-app-passwall alist luci-app-alist smartdns luci-app-smartdns v2dat mosdns luci-app-mosdns \
+        adguardhome luci-app-adguardhome ddns-go luci-app-ddns-go taskd luci-lib-xterm luci-lib-taskd \
+        luci-app-store quickstart luci-app-quickstart luci-app-istorex luci-app-cloudflarespeedtest \
+        luci-theme-argon netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash luci-app-homeproxy \
+        luci-app-amlogic nikki luci-app-nikki tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf \
+        easytier luci-app-easytier msd_lite luci-app-msd_lite
     ./scripts/feeds install -p mypack -f luci-app-taskplan
     ./scripts/feeds install -p mypack -f luci-app-cpu-status
     ./scripts/feeds install -p mypack -f luci-app-temp-status
@@ -406,9 +411,6 @@ update_pw() {
     local pw_share_dir="$BUILD_DIR/feeds/small8/luci-app-passwall/root/usr/share/passwall"
     local smartdns_lua_path="$pw_share_dir/helper_smartdns_add.lua"
     local rules_dir="$pw_share_dir/rules"
-
-    # 删除 helper_smartdns_add.lua 文件中的特定行
-    [ -f "$smartdns_lua_path" ] && sed -i '/force-qtype-SOA 65/d' "$smartdns_lua_path"
 
     # 清空chnlist
     [ -f "$rules_dir/chnlist" ] && echo "" >"$rules_dir/chnlist"
@@ -789,6 +791,7 @@ main() {
     update_script_priority
     fix_easytier
     update_geoip
+    update_package "xray-core"
     # update_proxy_app_menu_location
     # update_dns_app_menu_location
 }
