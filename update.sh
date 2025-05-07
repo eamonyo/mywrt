@@ -158,7 +158,6 @@ install_small8() {
     ./scripts/feeds install -p mypack -f luci-app-taskplan
     ./scripts/feeds install -p mypack -f luci-app-cpu-status
     ./scripts/feeds install -p mypack -f luci-app-temp-status
-    ./scripts/feeds install -p mypack -f luci-app-netspeedtest
 }
 
 install_feeds() {
