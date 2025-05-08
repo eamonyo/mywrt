@@ -150,7 +150,7 @@ install_small8() {
     ./scripts/feeds install -p small8 -f sing-box v2ray-core v2ray-geodata v2ray-geoview v2ray-plugin \
         chinadns-ng ipt2socks tcping trojan-plus simple-obfs \
         alist luci-app-alist smartdns luci-app-smartdns v2dat mosdns luci-app-mosdns \
-        adguardhome luci-app-adguardhome ddns-go luci-app-ddns-go taskd luci-lib-xterm luci-lib-taskd \
+        adguardhome luci-app-adguardhome taskd luci-lib-xterm luci-lib-taskd \
         luci-app-store quickstart luci-app-quickstart luci-app-istorex \
         luci-theme-argon lucky luci-app-lucky luci-app-openclash luci-app-homeproxy \
         nikki luci-app-nikki tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf \
