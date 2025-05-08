@@ -15,10 +15,11 @@ on:
         required: true
         description: Runs on...
         type: choice
-        default: ubuntu-22.04
+        default: ubuntu-latest
         options:
+          - ubuntu-latest
+          - ubuntu-24.04
           - ubuntu-22.04
-
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -27,6 +28,18 @@ jobs:
     runs-on: ${{ inputs.runs-on }}
 
     steps:
+      - name: System Hardware Info 
+        run: |
+          echo "====[ 系统信息 ]===="
+          echo "OS Version  : $(lsb_release -sd)"  # 显示具体Ubuntu版本
+          echo "Kernel      : $(uname -sr)"        # 内核版本
+          echo "Architecture: $(arch)"             # 架构类型(x86_64/aarch64)
+
+          echo "\n====[ 硬件配置 ]===="
+          lscpu | grep -E 'Model name|Socket|Core|Thread'  # CPU详细信息
+          free -h | awk '/Mem/{print "RAM       : "$2}'   # 内存总量
+          df -h / | awk '/\//{print "Disk Space: "$4"/"$2" free"}'  # 磁盘剩余空间
+
       - name: Maximize build space
         uses: AdityaGarg8/remove-unwanted-software@v5
         with:
