@@ -15,7 +15,7 @@ on:
         required: true
         description: Runs on...
         type: choice
-        default: ubuntu-latest
+        default: ubuntu-22.04
         options:
           - ubuntu-latest
           - ubuntu-24.04
