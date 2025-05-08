@@ -61,7 +61,7 @@ if [[ -d $TARGET_DIR ]]; then
 fi
 
 make download -j$(($(nproc) * 2))
-make -j$(($(nproc) + 2)) || make -j1 V=s
+make -j$(($(nproc) + 3)) || make -j1 V=s
 
 FIRMWARE_DIR="$BASE_PATH/firmware"
 \rm -rf "$FIRMWARE_DIR"

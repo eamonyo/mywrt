@@ -68,6 +68,7 @@ update_feeds() {
         echo "src-git small8 https://github.com/kenzok8/small-package" >>"$BUILD_DIR/$FEEDS_CONF"
     fi
 
+    echo "src-git mypack https://github.com/eamonyo/openwrt-pack" >> "$BUILD_DIR/$FEEDS_CONF"
     # 添加自定义软件源
     if ! grep -q "mypack" "$BUILD_DIR/$FEEDS_CONF"; then
         # 确保文件以换行符结尾
@@ -128,9 +129,12 @@ remove_unwanted_packages() {
         \rm -rf ./package/istore
     fi
 
+    # ipq60xx/50xx不支持NSS offload mnet_rx
     # ipq60xx不支持NSS offload mnet_rx
     if grep -q "nss_packages" "$BUILD_DIR/$FEEDS_CONF"; then
         rm -rf "$BUILD_DIR/feeds/nss_packages/wwan"
+        # dtlsmgr、tlsmgr会编译qca-nss-crypto
+        sed -i -e '/,qca-nss-drv-dtlsmgr/d' -e '/,qca-nss-drv-tlsmgr/d' "$BUILD_DIR/feeds/nss_packages/qca-nss-clients/Makefile"
     fi
 
     # 临时放一下，清理脚本
@@ -147,13 +151,19 @@ update_golang() {
 }
 
 install_small8() {
-    ./scripts/feeds install -p small8 -f sing-box v2ray-geodata v2ray-geoview \
-        chinadns-ng ipt2socks tcping simple-obfs \
-        alist luci-app-alist v2dat mosdns luci-app-mosdns \
-        adguardhome luci-app-adguardhome taskd luci-lib-xterm luci-lib-taskd \
-        luci-app-store quickstart luci-app-quickstart luci-app-istorex \
-        luci-theme-argon lucky luci-app-lucky luci-app-openclash luci-app-homeproxy
+    ./scripts/feeds install -p small8 -f xray-core xray-plugin dns2tcp dns2socks haproxy hysteria naiveproxy \
+        shadowsocks-rust sing-box v2ray-core v2ray-geodata v2ray-geoview v2ray-plugin \
+        chinadns-ng ipt2socks tcping trojan-plus simple-obfs shadowsocksr-libev alist \
+        luci-app-alist smartdns luci-app-smartdns v2dat mosdns luci-app-mosdns \
+        adguardhome luci-app-adguardhome taskd luci-lib-xterm luci-lib-taskd luci-app-store \
+        quickstart luci-app-quickstart luci-app-istorex luci-theme-argon netdata luci-app-netdata \
+        luci-app-openclash nikki luci-app-nikki luci-app-homeproxy ddns-go luci-app-ddns-go \
+        lucky luci-app-lucky tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf easytier \
+        luci-app-easytier tuic-client luci-app-passwall msd_lite luci-app-msd_lite wrtbwmon luci-app-wrtbwmon mwan3 luci-app-mwan3
+    ./scripts/feeds install -p mypack -f luci-app-taskplan
+    ./scripts/feeds install -p mypack -f luci-app-cpu-status
     ./scripts/feeds install -p mypack -f luci-app-temp-status
+    ./scripts/feeds install -p mypack -f luci-app-netspeedtest
 }
 
 install_feeds() {
@@ -329,6 +339,19 @@ fix_mkpkg_format_invalid() {
     fi
 }
 
+add_ax6600_led() {
+    local athena_led_dir="$BUILD_DIR/package/emortal/luci-app-athena-led"
+
+    # 删除旧的目录（如果存在）
+    rm -rf "$athena_led_dir" 2>/dev/null
+
+    # 克隆最新的仓库
+    git clone --depth=1 https://github.com/NONGFAH/luci-app-athena-led.git "$athena_led_dir"
+    # 设置执行权限
+    chmod +x "$athena_led_dir/root/usr/sbin/athena-led"
+    chmod +x "$athena_led_dir/root/etc/init.d/athena_led"
+}
+
 chanage_cpuusage() {
     local luci_dir="$BUILD_DIR/feeds/luci/modules/luci-base/root/usr/share/rpcd/ucode/luci"
     local imm_script1="$BUILD_DIR/package/base-files/files/sbin/cpuusage"
@@ -392,6 +415,9 @@ update_pw() {
     local pw_share_dir="$BUILD_DIR/feeds/small8/luci-app-passwall/root/usr/share/passwall"
     local smartdns_lua_path="$pw_share_dir/helper_smartdns_add.lua"
     local rules_dir="$pw_share_dir/rules"
+
+    # 删除 helper_smartdns_add.lua 文件中的特定行
+    [ -f "$smartdns_lua_path" ] && sed -i '/force-qtype-SOA 65/d' "$smartdns_lua_path"
 
     # 清空chnlist
     [ -f "$rules_dir/chnlist" ] && echo "" >"$rules_dir/chnlist"
@@ -749,6 +775,7 @@ main() {
     # fix_mkpkg_format_invalid
     chanage_cpuusage
     update_tcping
+    add_ax6600_led
     set_custom_task
     update_pw
     install_opkg_distfeeds
@@ -776,4 +803,5 @@ main() {
     # update_dns_app_menu_location
 }
 
+main "$@"
 main "$@"
