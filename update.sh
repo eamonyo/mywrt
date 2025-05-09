@@ -157,13 +157,12 @@ install_small8() {
         luci-app-alist smartdns luci-app-smartdns v2dat mosdns luci-app-mosdns \
         adguardhome luci-app-adguardhome taskd luci-lib-xterm luci-lib-taskd luci-app-store \
         quickstart luci-app-quickstart luci-app-istorex luci-theme-argon netdata luci-app-netdata \
-        luci-app-openclash nikki luci-app-nikki luci-app-homeproxy ddns-go luci-app-ddns-go \
-        lucky luci-app-lucky tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf easytier \
-        luci-app-easytier tuic-client luci-app-passwall msd_lite luci-app-msd_lite wrtbwmon luci-app-wrtbwmon mwan3 luci-app-mwan3
+        luci-app-openclash nikki luci-app-nikki luci-app-homeproxy \
+        lucky luci-app-lucky tailscale luci-app-tailscale easytier \
+        luci-app-easytier tuic-client luci-app-passwall msd_lite luci-app-msd_lite mwan3 luci-app-mwan3
     ./scripts/feeds install -p mypack -f luci-app-taskplan
     ./scripts/feeds install -p mypack -f luci-app-cpu-status
     ./scripts/feeds install -p mypack -f luci-app-temp-status
-    ./scripts/feeds install -p mypack -f luci-app-netspeedtest
 }
 
 install_feeds() {
